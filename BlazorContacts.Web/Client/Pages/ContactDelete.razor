@@ -1,0 +1,122 @@
+﻿@page "/contactdelete/{id:int}"
+
+@inject IContactService ContactService
+@inject NavigationManager NavigationManager
+
+@if (contact == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenTemplateForm Data="@contact">
+        <div class="card">
+            <div class="card-body">
+                <div class="container">
+                    <RadzenFieldset Text="Contact Details">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="">First Name</label>
+                                <RadzenTextBox class="form-control" @bind-Value="@contact.FirstName"></RadzenTextBox>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="">Last Name</label>
+                                <RadzenTextBox class="form-control" @bind-Value="@contact.LastName"></RadzenTextBox>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="">Phone</label>
+                                <RadzenTextBox class="form-control" @bind-Value="@contact.Phone"></RadzenTextBox>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="">Address</label>
+                                <RadzenTextArea class="form-control" @bind-Value="@contact.Address"></RadzenTextArea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <RadzenButton Text="Delete" ButtonStyle="ButtonStyle.Warning" Click="@(args => DeleteAsync())" />
+                                <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Secondary" Click="@(args => NavigateHome())" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+
+                            </div>
+                        </div>
+                    </RadzenFieldset>
+                </div>
+            </div>
+        </div>
+    </RadzenTemplateForm>
+
+    @*<EditForm Model="contact" OnValidSubmit="DeleteAsync">
+            <div class="card">
+                <div class="card-body">
+                    <div class="container">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="">First Name</label>
+                                    <InputText class="form-control" @bind-Value="@contact.FirstName"></InputText>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="">Last Name</label>
+                                    <InputText class="form-control" @bind-Value="@contact.LastName"></InputText>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="">Phone</label>
+                                    <InputText class="form-control" @bind-Value="@contact.Phone"></InputText>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="">Address</label>
+                                    <InputTextArea class="form-control" @bind-Value="@contact.Address"></InputTextArea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <input type="submit" class="btn btn-outline-success" value="Delete" />
+                                    <input type="button" class="btn btn-outline-secondary" value="Cancel" @onclick="NavigateHome" />
+                                </div>
+                                <div class="col-md-4 mb-3">
+
+                                </div>
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+        </EditForm>*@
+}
+@code {
+    public Contacts contact;
+
+    [Parameter]
+    public int id { get; set; }
+    protected async override Task OnInitializedAsync()
+    {
+        contact = await ContactService.GetDetails(id);
+    }
+    protected async Task DeleteAsync()
+    {
+        await ContactService.DeleteContact(id);
+        NavigateHome();
+    }
+
+    private void NavigateHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}
