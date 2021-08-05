@@ -1,4 +1,5 @@
 ﻿using BlazorContacts.Repositories.Repositories;
+using BlazorContacts.Web.Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -17,6 +18,69 @@ namespace BlazorContacts.Web.Server.Controllers
         public ContactsController(IContacRepository contactRepository)
         {
             _contactRepository = contactRepository;
+        }
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] Contacts contact)
+        {
+            if (contact == null)
+                return BadRequest();
+
+            if (string.IsNullOrEmpty(contact.FirstName))
+                ModelState.AddModelError("FirstName", "First name can't be empty");
+            if (string.IsNullOrEmpty(contact.LastName))
+                ModelState.AddModelError("LastName", "Last name can't be empty");
+            if (string.IsNullOrEmpty(contact.Phone))
+                ModelState.AddModelError("Phone", "Phone can't be empty");
+            if (string.IsNullOrEmpty(contact.Address))
+                ModelState.AddModelError("Address", "Address can't be empty");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _contactRepository.InsertContact(contact);
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] Contacts contact)
+        {
+            if (contact == null)
+                return BadRequest();
+
+            if (string.IsNullOrEmpty(contact.FirstName))
+                ModelState.AddModelError("FirstName", "First name can't be empty");
+            if (string.IsNullOrEmpty(contact.LastName))
+                ModelState.AddModelError("LastName", "Last name can't be empty");
+            if (string.IsNullOrEmpty(contact.Phone))
+                ModelState.AddModelError("Phone", "Phone can't be empty");
+            if (string.IsNullOrEmpty(contact.Address))
+                ModelState.AddModelError("Address", "Address can't be empty");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _contactRepository.UpdateContact(contact);
+
+            return NoContent();
+        }
+
+        [HttpGet]
+        public async Task<IEnumerable<Contacts>> Get()
+        {
+            return await _contactRepository.GetAll();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<Contacts> Get(int id)
+        {
+            return await _contactRepository.GetDetails(id);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task Delete(int id)
+        {
+            await _contactRepository.DeleteContact(id);
         }
     }
 }
